@@ -59,7 +59,7 @@ class FileStorage:
         """function to delete obj from __objects"""
         if not obj:
             return
-        key = "{}.{}".format(type(obj).__name, obj.id)
+        key = "{}.{}".format(type(obj).__name__, obj.id)
         if key in self.__objects:
             del self.__objects[key]
             self.save()
