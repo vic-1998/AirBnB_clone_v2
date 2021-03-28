@@ -134,7 +134,7 @@ class HBNBCommand(cmd.Cmd):
                     value = float(att[1])
                 else:
                     value = int(att[1])
-            if vale != "":
+            if value != "":
                 setattr(new, key, value)
         new.save()
         print(new.id)
