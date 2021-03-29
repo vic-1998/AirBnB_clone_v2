@@ -17,7 +17,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from os import getenv
 
 classes = {
-    'User': User, 'Place': Place,
+    'BaseModel': BaseModel, 'User': User, 'Place': Place,
     'State': State, 'City': City, 'Amenity': Amenity,
     'Review': Review
 }
