@@ -1,10 +1,11 @@
 #!/usr/bin/python3
-""" Place Module for HBNB project """
+'''define class place'''
 from models.base_model import BaseModel
 
 
 class Place(BaseModel):
-    """ A place to stay """
+    '''class place'''
+
     city_id = ""
     user_id = ""
     name = ""
@@ -16,3 +17,7 @@ class Place(BaseModel):
     latitude = 0.0
     longitude = 0.0
     amenity_ids = []
+
+    def __init__(self, *args, **kwargs):
+        '''constructor method'''
+        super().__init__(*args, **kwargs)
