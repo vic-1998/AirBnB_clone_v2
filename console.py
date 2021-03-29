@@ -6,21 +6,24 @@ import cmd
 import shlex
 import models
 from models.base_model import BaseModel
-from models.user import User
-from models.city import City
-from models.state import State
 from models.amenity import Amenity
+from models.city import City
 from models.place import Place
 from models.review import Review
+from models.state import State
+from models.user import User
 
 
-classes = {"BaseModel": BaseModel, "City": City, "State": State,
-           "Amenity": Amenity, "User": User, "Place": Place, "Review": Review}
+classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
 
 
 class HBNBCommand(cmd.Cmd):
     """class HBNBCommand(cmd.Cmd):"""
     prompt = '(hbnb)'
+
+    valid_classes = ["BaseModel", "User", "State",
+                     "City", "Amenity", "Place", "Review"]
 
     def do_EOF(self, arg):
         """Exit console"""
@@ -39,9 +42,9 @@ class HBNBCommand(cmd.Cmd):
         new_dict = {}
         for arg in args:
             if "=" in arg:
-                values = arg.split('=', 1)
-                key = values[0]
-                value = values[1]
+                valu = arg.split('=', 1)
+                key = valu[0]
+                value = valu[1]
                 if value[0] == value[-1] == '"':
                     value = shlex.split(value)[0].replace('_', ' ')
                 else:
@@ -57,18 +60,28 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        arg = shlex.split(args)
-        if len(arg) == 0:
+        if len(args) == 0:
             print("** class name missing **")
             return False
-        if arg[0] in classes:
-            new_dict = self.method_key_value(arg[1:])
-            instance = classes[arg[0]](**new_dict)
-        else:
+        try:
+            args = shlex.split(args)
+            new_instance = eval(args[0])()
+            if len(args) > 1:
+                new_dict = dict(arg.split('=') for arg in args[1:])
+                for key, value in new_dict.items():
+                    if hasattr(new_instance, key):
+                        if '_' in value:
+                            value = value.replace('_', ' ')
+                            try:
+                                value = eval(value)
+                            except Exception:
+                                pass
+                        setattr(new_instance, key, value)
+            new_instance.save()
+            print(new_instance.id)
+
+        except Exception:
             print("** class doesn't exist **")
-            return False
-        print(instance.id)
-        instance.save()
 
     def do_show(self, arg):
         """Prints string rep. of an instance based"""

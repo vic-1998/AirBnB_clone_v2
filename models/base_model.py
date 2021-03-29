@@ -1,53 +1,51 @@
 #!/usr/bin/python3
-'''super class'''
+"""
+Contains Class BaseModel
+"""
+
 import uuid
-from datetime import datetime
 import models
+from datetime import datetime
 
 time = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 class BaseModel():
-    '''main class'''
+    """The BaseModel class"""
 
     def __init__(self, *args, **kwargs):
-        '''constructor method'''
-
-        if len(kwargs):
+        """Initialization of the base model"""
+        if kwargs:
             for key, value in kwargs.items():
                 if key != "__class__":
                     setattr(self, key, value)
-                if hasattr(self, "created_at") and type(self.created_at)\
-                        is str:
-                    self.created_at = datetime.strptime(value, time)
-                if hasattr(self, "updated_at") and type(self.updated_at)\
-                        is str:
-                    self.updated_at = datetime.strptime(value, time)
+            if hasattr(self, "created_at") and type(self.created_at) is str:
+                self.created_at = datetime.strptime(kwargs["created_at"], time)
+            if hasattr(self, "updated_at") and type(self.updated_at) is str:
+                self.updated_at = datetime.strptime(kwargs["updated_at"], time)
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
-            self.updated_at = datetime.now()
+            self.updated_at = self.created_at
             models.storage.new(self)
             models.storage.save()
 
     def __str__(self):
-        '''print formal representation of Base model isntance'''
-        strout = '['
-        strout += str(self.__class__.__name__) + '] ('
-        strout += str(self.id) + ') ' + str(self.__dict__)
-        return strout
+        """string representation"""
+        return "[{:s}] ({:s}) {}".format(self.__class__.__name__, self.id,
+                                         self.__dict__)
 
     def save(self):
-        '''update attribute with datetime'''
+        """updates the public instance attribute updated_at"""
         self.updated_at = datetime.now()
         models.storage.save()
 
     def to_dict(self):
         """returns a dictionary containing all keys/values"""
-        newdic = self.__dict__.copy()
-        if "created_at" in newdic:
-            newdic["created_at"] = newdic["created_at"].strftime(time)
-        if "updated_at" in newdic:
-            newdic["updated_at"] = newdic["updated_at"].strftime(time)
-        newdic["__class__"] = self.__class__.__name__
-        return newdic
+        new_dict = self.__dict__.copy()
+        if "created_at" in new_dict:
+            new_dict["created_at"] = new_dict["created_at"].strftime(time)
+        if "updated_at" in new_dict:
+            new_dict["updated_at"] = new_dict["updated_at"].strftime(time)
+        new_dict["__class__"] = self.__class__.__name__
+        return new_dict
