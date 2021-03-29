@@ -1,10 +1,11 @@
 #!/usr/bin/python3
-""" module console.py"""
+"""
+Contains the entry point of the command
+"""
 import cmd
-import models
 import shlex
+import models
 from models.base_model import BaseModel
-from models import storage
 from models.user import User
 from models.city import City
 from models.state import State
@@ -12,95 +13,115 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 
-atri = {"BaseModel": BaseModel, "User": User, "City": City, "State": State,
-        "Amenity": Amenity, "Place": Place, "Review": Review}
+
+classes = {"BaseModel": BaseModel, "City": City, "State": State,
+           "Amenity": Amenity, "User": User, "Place": Place, "Review": Review}
 
 
 class HBNBCommand(cmd.Cmd):
-    """class console command"""
-    prompt = "(hbnb) "
-    class_list = {"BaseModel"}
+    """class HBNBCommand(cmd.Cmd):"""
+    prompt = '(hbnb)'
 
-    def do_quit(self, args):
-        """Command to quit the program"""
-        quit()
-
-    def do_EOF(self, args):
-        """EOF command to exit the program"""
-        quit()
+    def do_EOF(self, arg):
+        """Exit console"""
+        return True
 
     def emptyline(self):
-        return
+        """shouldnt execute anything"""
+        return False
 
-    def do_create(self, line):
-        """Create new instance"""
-        arg = shlex.split(line)
+    def do_quit(self, arg):
+        """Quit command to exit the program"""
+        return True
+
+    def method_key_value(self, args):
+        """creates a dictionary from a list of strings"""
+        new_dict = {}
+        for arg in args:
+            if "=" in arg:
+                values = arg.split('=', 1)
+                key = values[0]
+                value = values[1]
+                if value[0] == value[-1] == '"':
+                    value = shlex.split(value)[0].replace('_', ' ')
+                else:
+                    try:
+                        value = int(value)
+                    except:
+                        try:
+                            value = float(value)
+                        except:
+                            continue
+                new_dict[key] = value
+        return new_dict
+
+    def do_create(self, args):
+        """ Create an object of any class"""
+        arg = shlex.split(args)
         if len(arg) == 0:
             print("** class name missing **")
             return False
-        if arg[0] in atri:
-            instance = atri[arg[0]]()
+        if arg[0] in classes:
+            new_dict = self.method_key_value(arg[1:])
+            instance = classes[arg[0]](**new_dict)
         else:
             print("** class doesn't exist **")
             return False
         print(instance.id)
         instance.save()
 
-    def do_show(self, line):
-        '''print the string representation of an
-        instance based on the class name'''
-        arg = shlex.split(line)
-        odic = storage.all()
-        if len(arg) == 0:
+    def do_show(self, arg):
+        """Prints string rep. of an instance based"""
+        burger = shlex.split(arg)
+        if len(burger) == 0:
             print("** class name missing **")
-            return
-        if arg[0] not in self.class_list:
-            print("** class doesn't exist **")
-        if len(arg) < 2:
-            print("** instance id missing **")
-        else:
-            key = arg[0] + "." + arg[1]
-            if key in odic:
-                obj = odic[key]
-                print(obj)
+            return False
+        if burger[0] in classes:
+            if len(burger) > 1:
+                beer = burger[0] + "." + burger[1]
+                if beer in models.storage.all():
+                    print(models.storage.all()[beer])
+                else:
+                    print("** no instance found **")
             else:
-                print("** no instance found **")
-
-    def do_destroy(self, line):
-        '''Deletes an instance based on the class name and id'''
-        arg = shlex.split(line)
-        if len(arg) == 0:
-            print("** class name missing **")
-        if arg[0] not in self.class_list:
-            print("** class doesn't exist **")
-        if len(arg) < 2:
-            print("** instance id missing **")
+                print("** instance id missing **")
         else:
-            odic = storage.all()
-            for key, value in odic.items():
-                if value.id == arg[1] and value.__class__.__name__ == arg[0]:
-                    del(odic[key])
-                    models.storage.save()
-                    return
-            print("** no instance found **")
+            print("** class doesn't exist **")
 
-    def do_all(self, line):
-        ''' Prints all string representation of all
-        instances based or not on the class name'''
-        arg = shlex.split(line)
-        odic = []
-        if len(arg) == 0:
+    def do_destroy(self, arg):
+        """Deletes an instance based on the class and id"""
+        args = shlex.split(arg)
+        if len(args) == 0:
+            print("** class name missing **")
+        elif args[0] in classes:
+            if len(args) > 1:
+                key = args[0] + "." + args[1]
+                if key in models.storage.all():
+                    models.storage.all().pop(key)
+                    models.storage.save()
+                else:
+                    print("** no instance found **")
+            else:
+                print("** instance id missing **")
+        else:
+            print("** class doesn't exist **")
+
+    def do_all(self, arg):
+        """Prints string representations of instances"""
+        burger = shlex.split(arg)
+        beer = []
+        if len(burger) == 0:
             for value in models.storage.all().values():
-                odic.append(str(value))
+                beer.append(str(value))
             print("[", end="")
-            print(", ".join(odic), end="")
+            print(", ".join(beer), end="")
             print("]")
-        elif odic[0] in atri:
-            for k in models.storage.all():
-                if arg[0] in k:
-                    odic.append(str(models.storage.all()[k]))
+        elif burger[0] in classes:
+            for pizza in models.storage.all():
+                if burger[0] in pizza:
+                    beer.append(str(models.storage.all()[pizza]))
             print("[", end="")
-            print(", ".join(odic), end="")
+            print(", ".join(beer), end="")
             print("]")
         else:
             print("** class doesn't exist **")
@@ -113,7 +134,7 @@ class HBNBCommand(cmd.Cmd):
         floats = ["latitude", "longitude"]
         if len(args) == 0:
             print("** class name missing **")
-        elif args[0] in atri:
+        elif args[0] in classes:
             if len(args) > 1:
                 k = args[0] + "." + args[1]
                 if k in models.storage.all():
