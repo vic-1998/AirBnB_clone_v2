@@ -6,16 +6,16 @@ import cmd
 import shlex
 import models
 from models.base_model import BaseModel
-from models.user import User
-from models.city import City
-from models.state import State
 from models.amenity import Amenity
+from models.city import City
 from models.place import Place
 from models.review import Review
+from models.state import State
+from models.user import User
 
 
-classes = {"BaseModel": BaseModel, "City": City, "State": State,
-           "Amenity": Amenity, "User": User, "Place": Place, "Review": Review}
+classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
 
 
 class HBNBCommand(cmd.Cmd):
@@ -55,20 +55,20 @@ class HBNBCommand(cmd.Cmd):
                 new_dict[key] = value
         return new_dict
 
-    def do_create(self, args):
+    def do_create(self, arg):
         """ Create an object of any class"""
-        arg = shlex.split(args)
-        if len(arg) == 0:
+        args = arg.split()
+        if len(args) == 0:
             print("** class name missing **")
             return False
-        if arg[0] in classes:
-            new_dict = self.method_key_value(arg[1:])
-            instance = classes[arg[0]](**new_dict)
+        if args[0] in classes:
+            new_dict = self.method_key_value(args[1:])
+            instance = classes[args[0]](**new_dict)
         else:
             print("** class doesn't exist **")
             return False
-        print(instance.id)
         instance.save()
+        print(instance.id)
 
     def do_show(self, arg):
         """Prints string rep. of an instance based"""
