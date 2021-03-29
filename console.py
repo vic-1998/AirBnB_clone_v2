@@ -1,18 +1,19 @@
 #!/usr/bin/python3
-"""
+""" 
 Contains the entry point of the command
 """
+
 import cmd
-import shlex
+from datetime import datetime
 import models
-from models.base_model import BaseModel
 from models.amenity import Amenity
+from models.base_model import BaseModel
 from models.city import City
 from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
-
+import shlex  # for splitting the line along spaces except in double quotes
 
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
@@ -20,13 +21,10 @@ classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
 
 class HBNBCommand(cmd.Cmd):
     """class HBNBCommand(cmd.Cmd):"""
-    prompt = '(hbnb)'
-
-    valid_classes = ["BaseModel", "User", "State",
-                     "City", "Amenity", "Place", "Review"]
+    prompt = '(hbnb) '
 
     def do_EOF(self, arg):
-        """Exit console"""
+        """Exits console"""
         return True
 
     def emptyline(self):
@@ -58,42 +56,32 @@ class HBNBCommand(cmd.Cmd):
                 new_dict[key] = value
         return new_dict
 
-    def do_create(self, args):
-        """ Create an object of any class"""
+    def do_create(self, arg):
+        """Create an object of any class"""
+        args = arg.split()
         if len(args) == 0:
             print("** class name missing **")
             return False
-        try:
-            args = shlex.split(args)
-            new_instance = eval(args[0])()
-            if len(args) > 1:
-                new_dict = dict(arg.split('=') for arg in args[1:])
-                for key, value in new_dict.items():
-                    if hasattr(new_instance, key):
-                        if '_' in value:
-                            value = value.replace('_', ' ')
-                            try:
-                                value = eval(value)
-                            except Exception:
-                                pass
-                        setattr(new_instance, key, value)
-            new_instance.save()
-            print(new_instance.id)
-
-        except Exception:
+        if args[0] in classes:
+            new_dict = self.method_key_value(args[1:])
+            instance = classes[args[0]](**new_dict)
+        else:
             print("** class doesn't exist **")
+            return False
+        print(instance.id)
+        instance.save()
 
     def do_show(self, arg):
         """Prints string rep. of an instance based"""
-        burger = shlex.split(arg)
-        if len(burger) == 0:
+        args = shlex.split(arg)
+        if len(args) == 0:
             print("** class name missing **")
             return False
-        if burger[0] in classes:
-            if len(burger) > 1:
-                beer = burger[0] + "." + burger[1]
-                if beer in models.storage.all():
-                    print(models.storage.all()[beer])
+        if args[0] in classes:
+            if len(args) > 1:
+                key = args[0] + "." + args[1]
+                if key in models.storage.all():
+                    print(models.storage.all()[key])
                 else:
                     print("** no instance found **")
             else:
@@ -121,23 +109,20 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, arg):
         """Prints string representations of instances"""
-        burger = shlex.split(arg)
-        beer = []
-        if len(burger) == 0:
-            for value in models.storage.all().values():
-                beer.append(str(value))
-            print("[", end="")
-            print(", ".join(beer), end="")
-            print("]")
-        elif burger[0] in classes:
-            for pizza in models.storage.all():
-                if burger[0] in pizza:
-                    beer.append(str(models.storage.all()[pizza]))
-            print("[", end="")
-            print(", ".join(beer), end="")
-            print("]")
+        args = shlex.split(arg)
+        obj_list = []
+        if len(args) == 0:
+            obj_dict = models.storage.all()
+        elif args[0] in classes:
+            obj_dict = models.storage.all(classes[args[0]])
         else:
             print("** class doesn't exist **")
+            return False
+        for key in obj_dict:
+            obj_list.append(str(obj_dict[key]))
+        print("[", end="")
+        print(", ".join(obj_list), end="")
+        print("]")
 
     def do_update(self, arg):
         """Update an instance based on the class name, id, attribute & value"""
