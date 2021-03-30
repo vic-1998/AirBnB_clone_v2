@@ -12,8 +12,8 @@ from models.place import Place
 from models.review import Review
 import json
 
-atri = {"BaseModel": BaseModel, "City": City, "State": State,
-        "Amenity": Amenity, "User": User, "Place": Place, "Review": Review}
+classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
 
 
 class FileStorage():
@@ -24,8 +24,14 @@ class FileStorage():
     # dictionary - empty but will store all objects by <class name>.id
     __objects = {}
 
-    def all(self):
+    def all(self, cls=None):
         """returns the dictionary __objects"""
+        if cls is not None:
+            new_dict = {}
+            for key, value in self.__objects.items():
+                if cls == value.__class__ or cls == value.__class__.__name__:
+                    new_dict[key] = value
+            return new_dict
         return self.__objects
 
     def new(self, obj):
@@ -48,7 +54,14 @@ class FileStorage():
             with open(self.__file_path, 'r') as burger:
                 beer = json.load(burger)
             for malta in beer:
-                self.__objects[malta] = atri[beer[malta]["__class__"]](
+                self.__objects[malta] = classes[beer[malta]["__class__"]](
                     **beer[malta])
         except:
             pass
+
+    def delete(self, obj=None):
+        """delete obj from __objects if it’s inside"""
+        if obj is not None:
+            key = obj.__class__.__name__ + '.' + obj.id
+            if key in self.__objects:
+                del self.__objects[key]
