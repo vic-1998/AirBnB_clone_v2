@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 """define class city"""
 import models
-from models.base_model import BaseModel
+from models.base_model import BaseModel, Base
 import sqlalchemy
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 
-class City(BaseModel):
+class City(BaseModel, Base):
     """class City"""
     if models.storage_t == "db":
         __tablename__ = 'cities'
