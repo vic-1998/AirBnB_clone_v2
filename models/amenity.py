@@ -1,12 +1,12 @@
 #!/usr/bin/python
 """Contains class State"""
-from models.base_model import BaseModel
+from models.base_model import BaseModel, Base
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String
 
 
-class Amenity(BaseModel):
-    """The Amenity class"""
-    name = ""
-
-    def __init__(self, *args, **kwargs):
-        """initializes Amenity"""
-        super().__init__(*args, **kwargs)
+class Amenity(BaseModel, Base):
+    """A"""
+    __tablename__ = "amenities"
+    name = Column(String(128), nullable=False)
+    place_amenities = relationship("Place", secondary='place_amenity')
