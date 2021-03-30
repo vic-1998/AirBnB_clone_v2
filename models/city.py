@@ -2,16 +2,14 @@
 """
 Contains Class City
 """
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy.orm import relationship, backref
 
-from models.base_model import BaseModel
 
-
-class City(BaseModel):
+class City(BaseModel, Base):
     """The City class"""
 
-    state_id = ""
-    name = ""
-
-    def __init__(self, *args, **kwargs):
-        """Initialization of the City Class"""
-        super().__init__(*args, **kwargs)
+    __tablename__ = 'cities'
+    name = Column(String(128), nullable=False)
+    state_id = Column(String(60), ForeignKey('states.id'), nullable=False)
