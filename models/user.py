@@ -2,18 +2,18 @@
 """
 Contains Class BaseModel
 """
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import backref, relationship
 
-from models.base_model import BaseModel
 
-
-class User(BaseModel):
-    """The User class"""
-
-    email = ""
-    password = ""
-    first_name = ""
-    last_name = ""
-
-    def __init__(self, *args, **kwargs):
-        """Initialization of the User Class"""
-        super().__init__(*args, **kwargs)
+class User(BaseModel, Base):
+    '''Class user'''
+    __tablename__ = 'users'
+    email = Column(String(128), nullable=False)
+    password = Column(String(128), nullable=False)
+    first_name = Column(String(128), nullable=True)
+    last_name = Column(String(128), nullable=True)
+    places = relationship('Place', backref='user', cascade='all, delete')
+    reviews = relationship('Review', backref='user', cascade='all, delete')
