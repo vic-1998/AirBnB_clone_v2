@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" 
+"""
 Contains the entry point of the command
 """
 
@@ -112,17 +112,20 @@ class HBNBCommand(cmd.Cmd):
         args = shlex.split(arg)
         obj_list = []
         if len(args) == 0:
-            obj_dict = models.storage.all()
+            for value in models.storage.all().values():
+                obj_list.append(str(value))
+            print("[", end="")
+            print(", ".join(obj_list), end="")
+            print("]")
         elif args[0] in classes:
-            obj_dict = models.storage.all(classes[args[0]])
+            for key in models.storage.all():
+                if args[0] in key:
+                    obj_list.append(str(models.storage.all()[key]))
+            print("[", end="")
+            print(", ".join(obj_list), end="")
+            print("]")
         else:
             print("** class doesn't exist **")
-            return False
-        for key in obj_dict:
-            obj_list.append(str(obj_dict[key]))
-        print("[", end="")
-        print(", ".join(obj_list), end="")
-        print("]")
 
     def do_update(self, arg):
         """Update an instance based on the class name, id, attribute & value"""

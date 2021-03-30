@@ -1,13 +1,12 @@
-#!/usr/bin/python3
-'''define class amenity'''
+#!/usr/bin/python
+"""Contains class State"""
 from models.base_model import BaseModel
 
 
 class Amenity(BaseModel):
-    '''class amenity'''
-
+    """The Amenity class"""
     name = ""
 
     def __init__(self, *args, **kwargs):
-        '''constructor method'''
+        """initializes Amenity"""
         super().__init__(*args, **kwargs)
