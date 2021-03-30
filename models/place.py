@@ -9,8 +9,8 @@ class Place(BaseModel,Base):
     '''class place'''
 
     __tablename__ = 'places'
-    city_id = Column(String(60), nullable=False, ForeingKey("cities.id"))
-    user_id = Column(String(60), nullable=False, ForeingKey("users.id"))
+    city_id = Column(String(60), ForeingKey("cities.id", nullable=False))
+    user_id = Column(String(60), ForeingKey("users.id"), nullable=False)
     name = Column(String(128), nullable=False)
     description = Column(String(1024), nullable=True)
     number_rooms = Column(Integer, nullable=False, default=0)
