@@ -17,7 +17,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 classes = {"City": City, "Place": Place, "State": State, "User": User,
-           "Review": Review}
+           "Review": Review, "Amenity": Amenity, "Place": Place}
 
 
 class DBStorage:
