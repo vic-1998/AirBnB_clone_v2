@@ -11,7 +11,7 @@ env.hosts = ['34.74.83.73', '54.172.228.152']
 def do_deploy(archive_path):
     """Deploy"""
     if exists(archive_path) is False:
-        return False
+        return (False)
     try:
         file = archive_path.split("/")[-1]
         x = file.split(".")[0]
@@ -24,6 +24,6 @@ def do_deploy(archive_path):
         run('rm -rf {}{}/web_static'.format(route, x))
         run('rm -rf /data/web_static/current')
         run('ln -s {}{}/ /data/web_static/current'.format(route, x))
-        return True
+        return (True)
     except:
-        return False
+        return (False)
