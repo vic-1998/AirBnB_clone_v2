@@ -32,10 +32,10 @@ def p_python(text='is cool'):
     return 'C ' + text.replace('_', ' ')
 
 
-@app.route('/number/<int:n>', strict_slashes=False)
-def n_number(n):
+@app.route("/number/<int:n>", strict_slashes=False)
+def number(n):
     """display “n is a number” only if n is an integer"""
-    return "{:d} id a number".format(n)
+    return "{} is a number".format(n)
 
 
 if __name__ == '__main__':
