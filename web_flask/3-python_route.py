@@ -15,7 +15,7 @@ def index():
 
 @app.route('/hbnb', strict_slashes=False)
 def hbnb():
-    """ display “HBNB”"""
+    """display “HBNB”"""
     return 'HBNB'
 
 
@@ -25,11 +25,11 @@ def cisfun(text):
     return 'C ' + text.replace('_', ' ')
 
 
-@app.route('/python', strict_slashes=False)
-@app.route('/python/<text>', strict_slashes=False)
-def p_python(text='is cool'):
-    """display “C ” followed by the value of the text variable"""
-    return 'C ' + text.replace('_', ' ')
+@app.route("/python", strict_slashes=False)
+@app.route("/python/<text>", strict_slashes=False)
+def python_is_cool(text="is cool"):
+    """display “Python ”, followed by the value of the text"""
+    return ("Python {}".format(text.replace("_", " ")))
 
 
 if __name__ == '__main__':
